@@ -3,8 +3,11 @@ package monokai;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.flyway.autoconfigure.FlywayAutoConfiguration;
 
-@SpringBootApplication//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
+
+
+@SpringBootApplication(exclude = FlywayAutoConfiguration.class)
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 public class Main {
 
