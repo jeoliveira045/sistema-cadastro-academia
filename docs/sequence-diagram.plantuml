@@ -1,0 +1,35 @@
+@startuml DSS_CadastrarAluno
+
+actor Administrador
+'participant "Sistema" as Sistema
+participant "AlunoController" as AlunoController
+participant "CadastrarUsuarioService" as CadastrarUsuarioService
+
+Administrador -> AlunoController : cadastrarAluno(Aluno)
+activate AlunoController
+AlunoController -> CadastrarUsuarioService: exec(Aluno)
+activate CadastrarUsuarioService
+CadastrarUsuarioService --> AlunoController : confirmacaoCadastro
+deactivate CadastrarUsuarioService
+AlunoController --> Administrador : confirmarCadastro
+deactivate AlunoController
+
+@enduml
+
+@startuml DSS_ConfigurarAlunoAtivoInativo
+
+actor Administrador
+'participant "Sistema" as Sistema
+participant "AlunoController" as AlunoController
+participant "ConfigurarAlunoAtivoInativoService" as ConfigurarAlunoAtivoInativoService
+
+Administrador -> AlunoController : ativarAluno(Aluno)
+activate AlunoController
+AlunoController -> ConfigurarAlunoAtivoInativoService: exec(Aluno)
+activate ConfigurarAlunoAtivoInativoService
+ConfigurarAlunoAtivoInativoService --> AlunoController : confirmacaoAtualizacao
+deactivate ConfigurarAlunoAtivoInativoService
+AlunoController --> Administrador : confirmarAtualizacao
+deactivate AlunoController
+
+@enduml

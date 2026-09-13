@@ -1,0 +1,21 @@
+@startuml
+
+
+actor Administrador
+
+rectangle "Sistema de cadastro de usuario de academia"{
+    usecase "Realizar Login" as UC1
+    usecase "Realizar cadastro de aluno" as UC2
+    usecase "Realizar cadastro de professor" as UC4
+    usecase "Alterar status dos \n alunos como \nativos e inativos" as UC3
+
+}
+
+Administrador --> UC1
+Administrador --> UC2
+Administrador --> UC3
+Administrador --> UC4
+
+
+
+@enduml

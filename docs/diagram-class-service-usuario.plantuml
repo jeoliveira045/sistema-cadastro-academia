@@ -1,0 +1,40 @@
+@startuml
+
+class CadastrarUsuarioService {
+    + exec(): Aluno
+    - verificarAlunoExistente(): boolean
+}
+
+class ConfigurarAlunoAtivoInativoService {
+    + exec(): Aluno
+}
+
+interface ProfessorRepository {
+    + findById(id: Long): Professor
+    + findAll(): List<Professor>
+    + save(aluno: Professor): Professor
+    + deleteById(id: Long): void
+}
+
+interface AlunoRepository {
+    + findById(id: Long): Aluno
+    + findAll(): List<Aluno>
+    + save(aluno: Aluno): Aluno
+    + deleteById(id: Long): void
+}
+
+class Aluno{
+
+}
+
+class Professor {
+
+}
+
+CadastrarUsuarioService --> AlunoRepository
+ConfigurarAlunoAtivoInativoService --> AlunoRepository
+CadastrarUsuarioService --> ProfessorRepository
+AlunoRepository --> Aluno
+ProfessorRepository --> Professor
+
+@enduml
