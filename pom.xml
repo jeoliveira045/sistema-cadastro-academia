@@ -10,7 +10,7 @@
     </parent>
     <groupId>monokai</groupId>
     <artifactId>sistema-usuario-academia</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>0.0.1-RC</version>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
