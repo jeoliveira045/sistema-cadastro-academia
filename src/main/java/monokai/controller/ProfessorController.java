@@ -24,27 +24,27 @@ public class ProfessorController {
 
     @GetMapping
     public ResponseEntity<List<Professor>> listar() {
-        return ResponseEntity.ok(professorRepository.findAll());
+        return ResponseEntity.ok(professorRepository.listarTodos());
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Professor> buscarPorId(@PathVariable Long id) {
-        return professorRepository.findById(id)
+        return professorRepository.buscarPorId(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Professor> atualizar(@PathVariable Long id, @RequestBody Professor professor) {
-        if (!professorRepository.existsById(id)) return ResponseEntity.notFound().build();
+        if (!professorRepository.buscarPorId(id).isPresent()) return ResponseEntity.notFound().build();
         professor.setId(id);
-        return ResponseEntity.ok(professorRepository.save(professor));
+        return ResponseEntity.ok(professorRepository.salvar(professor));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletar(@PathVariable Long id) {
-        if (!professorRepository.existsById(id)) return ResponseEntity.notFound().build();
-        professorRepository.deleteById(id);
+        if (!professorRepository.buscarPorId(id).isPresent()) return ResponseEntity.notFound().build();
+        professorRepository.excluir(id);
         return ResponseEntity.noContent().build();
     }
 }

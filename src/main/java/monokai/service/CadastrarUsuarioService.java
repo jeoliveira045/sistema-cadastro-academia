@@ -24,18 +24,18 @@ public class CadastrarUsuarioService {
         }
         aluno.setDataCriacao(LocalDateTime.now());
         aluno.setSituacao(Situacao.ATIVO);
-        return alunoRepository.save(aluno);
+        return alunoRepository.salvar(aluno);
     }
 
     public Professor exec(Professor professor) {
         professor.setDataCriacao(LocalDateTime.now());
         if(professor.getId() != null) professor.setDataAlteracao(LocalDateTime.now());
         professor.setSituacao(Situacao.ATIVO);
-        return professorRepository.save(professor);
+        return professorRepository.salvar(professor);
     }
 
     private boolean verificarAlunoExistente(String cpf, String email) {
-        return alunoRepository.findAll().stream()
+        return alunoRepository.listarTodos().stream()
                 .anyMatch(a -> a.getCpf().equals(cpf) || a.getEmail().equals(email));
     }
 }

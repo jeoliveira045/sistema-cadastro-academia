@@ -1,15 +1,16 @@
 package monokai.model;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.springframework.data.annotation.Id;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+import org.springframework.data.annotation.Id;
+
+import lombok.Getter;
+import lombok.Setter;
+
 @Getter
 @Setter
-public abstract class Pessoa {
+public class Pessoa {
 
     @Id
     private Long id;
@@ -20,7 +21,6 @@ public abstract class Pessoa {
     private LocalDate dtNascimento;
     private String cpf;
     private String endereco;
-    private TipoSanguineo tipoSanguineo;
     private String email;
     private Genero genero;
     private Situacao situacao;

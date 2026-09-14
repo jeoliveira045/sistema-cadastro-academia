@@ -15,12 +15,12 @@ public class ConfigurarAlunoAtivoInativoService {
     private final AlunoRepository alunoRepository;
 
     public Aluno exec(Long id) {
-        Aluno aluno = alunoRepository.findById(id)
+        Aluno aluno = alunoRepository.buscarPorId(id)
                 .orElseThrow(() -> new IllegalArgumentException("Aluno não encontrado."));
 
         aluno.setSituacao(aluno.getSituacao() == Situacao.ATIVO ? Situacao.INATIVO : Situacao.ATIVO);
         aluno.setDataAlteracao(LocalDateTime.now());
 
-        return alunoRepository.save(aluno);
+        return alunoRepository.salvar(aluno);
     }
 }

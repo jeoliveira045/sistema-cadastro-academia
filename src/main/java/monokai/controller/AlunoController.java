@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 import monokai.model.Aluno;
+import monokai.model.Pessoa;
 import monokai.repository.AlunoRepository;
 import monokai.service.CadastrarUsuarioService;
 import monokai.service.ConfigurarAlunoAtivoInativoService;
@@ -30,28 +31,28 @@ public class AlunoController {
     private final AlunoRepository alunoRepository;
 
     @PostMapping
-    public ResponseEntity<Aluno> cadastrar(@RequestBody Aluno aluno) {
+    public ResponseEntity<Pessoa> cadastrar(@RequestBody Aluno aluno) {
         return ResponseEntity.ok(cadastrarUsuarioService.exec(aluno));
     }
 
     @GetMapping
     public ResponseEntity<List<Aluno>> listar() {
-        return ResponseEntity.ok(alunoRepository.findAll());
+        return ResponseEntity.ok(alunoRepository.listarTodos());
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Aluno> buscarPorId(@PathVariable Long id) {
-        return alunoRepository.findById(id)
+        return alunoRepository.buscarPorId(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Aluno> atualizar(@PathVariable Long id, @RequestBody Aluno aluno) {
-        if (!alunoRepository.existsById(id)) return ResponseEntity.notFound().build();
+        if (!alunoRepository.buscarPorId(id).isPresent()) return ResponseEntity.notFound().build();
         aluno.setId(id);
         aluno.setDataAlteracao(LocalDateTime.now());
-        return ResponseEntity.ok(alunoRepository.save(aluno));
+        return ResponseEntity.ok(alunoRepository.salvar(aluno));
     }
 
     @PatchMapping("/{id}/situacao")
@@ -61,8 +62,8 @@ public class AlunoController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletar(@PathVariable Long id) {
-        if (!alunoRepository.existsById(id)) return ResponseEntity.notFound().build();
-        alunoRepository.deleteById(id);
+        if (!alunoRepository.buscarPorId(id).isPresent()) return ResponseEntity.notFound().build();
+        alunoRepository.excluir(id);
         return ResponseEntity.noContent().build();
     }
 }
