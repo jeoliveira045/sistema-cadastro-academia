@@ -26,6 +26,7 @@ import monokai.service.ConfigurarAlunoAtivoInativoService;
 @RestController
 @RequestMapping("/alunos")
 @RequiredArgsConstructor
+@PreAuthorize("hasRole('ADMIN') or hasRole('PROFESSOR')")
 public class AlunoController {
 
     private final CadastrarUsuarioService cadastrarUsuarioService;
@@ -38,13 +39,11 @@ public class AlunoController {
     }
 
     @GetMapping
-    @PreAuthorize("hasRole('PROFESSOR') or hasRole('ADMIN')")
     public ResponseEntity<List<Aluno>> listar() {
         return ResponseEntity.ok(alunoRepository.listarTodos());
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('PROFESSOR')")
     public ResponseEntity<Aluno> buscarPorId(@PathVariable Long id) {
         var aluno = alunoRepository.buscarPorId(id)
                 .orElseThrow(() -> new UsernameNotFoundException("Usuario não encontrado")); 

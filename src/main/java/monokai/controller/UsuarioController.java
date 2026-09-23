@@ -3,6 +3,9 @@ package monokai.controller;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,11 +24,13 @@ import monokai.repository.UsuarioRepository;
 @RequiredArgsConstructor
 public class UsuarioController {
 
+    private final UserDetailsManager userDetailsManager;
     private final UsuarioRepository usuarioRepository;
 
     @PostMapping
-    public ResponseEntity<Usuario> criar(@RequestBody Usuario usuario) {
-        return ResponseEntity.ok(usuarioRepository.salvar(usuario));
+    public ResponseEntity<Void> criar(@RequestBody Usuario usuario) {
+        userDetailsManager.createUser(toUserDetails(usuario));
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping
@@ -41,16 +46,24 @@ public class UsuarioController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Usuario> atualizar(@PathVariable Long id, @RequestBody Usuario usuario) {
+    public ResponseEntity<Void> atualizar(@PathVariable Long id, @RequestBody Usuario usuario) {
         if (!usuarioRepository.existePorId(id)) return ResponseEntity.notFound().build();
-        usuario.setId(id);
-        return ResponseEntity.ok(usuarioRepository.salvar(usuario));
+        userDetailsManager.updateUser(toUserDetails(usuario));
+        return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> excluir(@PathVariable Long id) {
-        if (!usuarioRepository.existePorId(id)) return ResponseEntity.notFound().build();
-        usuarioRepository.excluir(id);
+    @DeleteMapping("/{username}")
+    public ResponseEntity<Void> excluir(@PathVariable String username) {
+        if (!userDetailsManager.userExists(username)) return ResponseEntity.notFound().build();
+        userDetailsManager.deleteUser(username);
         return ResponseEntity.noContent().build();
+    }
+
+    private User toUserDetails(Usuario usuario) {
+        List<SimpleGrantedAuthority> authorities = usuario.getRoles() == null ? List.of() :
+                usuario.getRoles().stream()
+                        .map(role -> new SimpleGrantedAuthority(role.getRole()))
+                        .toList();
+        return new User(usuario.getUsername(), usuario.getSenha(), authorities);
     }
 }
