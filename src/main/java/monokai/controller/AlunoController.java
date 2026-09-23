@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -36,18 +38,21 @@ public class AlunoController {
     }
 
     @GetMapping
+    @PreAuthorize("hasRole('PROFESSOR') or hasRole('ADMIN')")
     public ResponseEntity<List<Aluno>> listar() {
         return ResponseEntity.ok(alunoRepository.listarTodos());
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('PROFESSOR')")
     public ResponseEntity<Aluno> buscarPorId(@PathVariable Long id) {
-        return alunoRepository.buscarPorId(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        var aluno = alunoRepository.buscarPorId(id)
+                .orElseThrow(() -> new UsernameNotFoundException("Usuario não encontrado")); 
+        return ResponseEntity.ok(aluno);
     }
 
     @PutMapping("/{id}")
+    
     public ResponseEntity<Aluno> atualizar(@PathVariable Long id, @RequestBody Aluno aluno) {
         if (!alunoRepository.buscarPorId(id).isPresent()) return ResponseEntity.notFound().build();
         aluno.setId(id);
