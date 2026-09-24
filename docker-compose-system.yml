@@ -1,0 +1,41 @@
+services:
+  app:
+    image: sistema-usuario-image:1.0.0
+    build: .
+    container_name: sistema-usuario-app
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/usuario-academia
+      SPRING_DATASOURCE_USERNAME: usuario-academia
+      SPRING_DATASOURCE_PASSWORD: Cy2s3vh7
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - app-network
+
+  db:
+    image: postgres:latest
+    container_name: sistema-usuario-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: usuario-academia
+      POSTGRES_PASSWORD: Cy2s3vh7
+      POSTGRES_DB: usuario-academia
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./sql/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U usuario-academia -d usuario-academia"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
