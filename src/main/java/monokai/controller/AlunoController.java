@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import monokai.model.Aluno;
 import monokai.model.Pessoa;
 import monokai.repository.AlunoRepository;
@@ -25,6 +26,7 @@ import monokai.service.ConfigurarAlunoAtivoInativoService;
 @RestController
 @RequestMapping("/alunos")
 @RequiredArgsConstructor
+@Slf4j
 @PreAuthorize("hasRole('ADMIN') or hasRole('PROFESSOR')")
 public class AlunoController {
 
@@ -34,25 +36,32 @@ public class AlunoController {
 
     @PostMapping
     public ResponseEntity<Pessoa> cadastrar(@RequestBody Aluno aluno) {
+        log.info("Cadastrando aluno: {}", aluno.getCpf());
         return ResponseEntity.ok(cadastrarUsuarioService.exec(aluno));
     }
 
     @GetMapping
     public ResponseEntity<List<Aluno>> listar() {
+        log.info("Listando todos os alunos");
         return ResponseEntity.ok(alunoRepository.listarTodos());
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<?> buscarPorId(@PathVariable Long id) {
+        log.info("Buscando aluno por id: {}", id);
         var aluno = alunoRepository.buscarPorId(id)
                 .map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+        if (aluno.getStatusCode().is4xxClientError()) log.error("Aluno não encontrado: {}", id);
         return aluno;
     }
 
     @PutMapping("/{id}")
-    
     public ResponseEntity<Aluno> atualizar(@PathVariable Long id, @RequestBody Aluno aluno) {
-        if (!alunoRepository.buscarPorId(id).isPresent()) return ResponseEntity.notFound().build();
+        log.info("Atualizando aluno: {}", id);
+        if (!alunoRepository.buscarPorId(id).isPresent()) {
+            log.error("Aluno não encontrado para atualização: {}", id);
+            return ResponseEntity.notFound().build();
+        }
         aluno.setId(id);
         aluno.setDataAlteracao(LocalDateTime.now());
         return ResponseEntity.ok(alunoRepository.salvar(aluno));
@@ -60,12 +69,17 @@ public class AlunoController {
 
     @PatchMapping("/{id}/situacao")
     public ResponseEntity<Aluno> alternarSituacao(@PathVariable Long id) {
+        log.info("Alternando situação do aluno: {}", id);
         return ResponseEntity.ok(configurarAlunoAtivoInativoService.exec(id));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletar(@PathVariable Long id) {
-        if (!alunoRepository.buscarPorId(id).isPresent()) return ResponseEntity.notFound().build();
+        log.info("Deletando aluno: {}", id);
+        if (!alunoRepository.buscarPorId(id).isPresent()) {
+            log.error("Aluno não encontrado para exclusão: {}", id);
+            return ResponseEntity.notFound().build();
+        }
         alunoRepository.excluir(id);
         return ResponseEntity.noContent().build();
     }

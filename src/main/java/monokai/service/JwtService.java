@@ -13,8 +13,10 @@ import org.springframework.stereotype.Service;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
+@Slf4j
 public class JwtService {
 
     @Value("${jwt.secret}")
@@ -32,6 +34,7 @@ public class JwtService {
             .map(GrantedAuthority::getAuthority)
             .toList();
 
+        log.info("Gerando token JWT para o usuário: {}", user.getUsername());
         return Jwts.builder()
             .subject(user.getUsername())
             .claim("roles", roles)
