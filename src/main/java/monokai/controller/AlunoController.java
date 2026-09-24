@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -44,10 +43,10 @@ public class AlunoController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Aluno> buscarPorId(@PathVariable Long id) {
+    public ResponseEntity<?> buscarPorId(@PathVariable Long id) {
         var aluno = alunoRepository.buscarPorId(id)
-                .orElseThrow(() -> new UsernameNotFoundException("Usuario não encontrado")); 
-        return ResponseEntity.ok(aluno);
+                .map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+        return aluno;
     }
 
     @PutMapping("/{id}")
