@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: java-app-deployment
+  labels:
+    app: java-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: java-app
+  template:
+    metadata:
+      labels:
+        app: java-app
+    spec:
+      containers:
+        - name: java-app
+          image: sistema-usuario:1.0.0
+          ports:
+            - containerPort: 8080
+          env:
+            - name: SPRING_DATASOURCE_URL
+              value: jdbc:postgresql://postgres-service:5432/usuario-academia
+            - name: SPRING_DATASOURCE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: username
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: password
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8080
+            initialDelaySeconds: 20
+            periodSeconds: 10

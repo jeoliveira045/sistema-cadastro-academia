@@ -1,6 +1,10 @@
 services:
   app:
+<<<<<<< Updated upstream
     image: sistema-usuario-image:1.0.0
+=======
+    image: sistema-usuario:1.0.0
+>>>>>>> Stashed changes
     build: .
     container_name: sistema-usuario-app
     restart: unless-stopped

@@ -5,6 +5,7 @@ import java.nio.charset.StandardCharsets;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.security.autoconfigure.actuate.web.servlet.EndpointRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -40,8 +41,8 @@ public class SecurityConfig {
             .sessionManagement(session ->
                 session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
+                .requestMatchers(EndpointRequest.to("health")).permitAll()
                 .requestMatchers("/auth/login", "/auth/register").permitAll()
-                .requestMatchers("/actuator/health").permitAll()
                 .anyRequest().authenticated()
             )
             .oauth2ResourceServer(oauth2 -> oauth2
