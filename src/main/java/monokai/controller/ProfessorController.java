@@ -23,53 +23,53 @@ import monokai.service.CadastrarUsuarioService;
 @RequestMapping("/professores")
 @RequiredArgsConstructor
 @Slf4j
-@PreAuthorize("hasRole('ADMIN')")
+@PreAuthorize("hasRole('ADMIN') or hasRole('SERVICE')")
 public class ProfessorController {
 
-    private final CadastrarUsuarioService cadastrarUsuarioService;
-    private final ProfessorRepository professorRepository;
+	private final CadastrarUsuarioService cadastrarUsuarioService;
+	private final ProfessorRepository professorRepository;
 
-    @PostMapping
-    public ResponseEntity<Professor> cadastrar(@RequestBody Professor professor) {
-        log.info("Cadastrando professor: {}", professor.getCpf());
-        return ResponseEntity.ok(cadastrarUsuarioService.exec(professor));
-    }
+	@PostMapping
+	public ResponseEntity<Professor> cadastrar(@RequestBody Professor professor) {
+		log.info("Cadastrando professor: {}", professor.getCpf());
+		return ResponseEntity.ok(cadastrarUsuarioService.exec(professor));
+	}
 
-    @GetMapping
-    public ResponseEntity<List<Professor>> listar() {
-        log.info("Listando todos os professores");
-        return ResponseEntity.ok(professorRepository.listarTodos());
-    }
+	@GetMapping
+	public ResponseEntity<List<Professor>> listar() {
+		log.info("Listando todos os professores");
+		return ResponseEntity.ok(professorRepository.listarTodos());
+	}
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Professor> buscarPorId(@PathVariable Long id) {
-        log.info("Buscando professor por id: {}", id);
-        var resultado = professorRepository.buscarPorId(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
-        if (resultado.getStatusCode().is4xxClientError()) log.error("Professor não encontrado: {}", id);
-        return resultado;
-    }
+	@GetMapping("/{id}")
+	public ResponseEntity<Professor> buscarPorId(@PathVariable Long id) {
+		log.info("Buscando professor por id: {}", id);
+		var resultado = professorRepository.buscarPorId(id).map(ResponseEntity::ok)
+				.orElse(ResponseEntity.notFound().build());
+		if (resultado.getStatusCode().is4xxClientError())
+			log.error("Professor não encontrado: {}", id);
+		return resultado;
+	}
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Professor> atualizar(@PathVariable Long id, @RequestBody Professor professor) {
-        log.info("Atualizando professor: {}", id);
-        if (!professorRepository.buscarPorId(id).isPresent()) {
-            log.error("Professor não encontrado para atualização: {}", id);
-            return ResponseEntity.notFound().build();
-        }
-        professor.setId(id);
-        return ResponseEntity.ok(professorRepository.salvar(professor));
-    }
+	@PutMapping("/{id}")
+	public ResponseEntity<Professor> atualizar(@PathVariable Long id, @RequestBody Professor professor) {
+		log.info("Atualizando professor: {}", id);
+		if (!professorRepository.buscarPorId(id).isPresent()) {
+			log.error("Professor não encontrado para atualização: {}", id);
+			return ResponseEntity.notFound().build();
+		}
+		professor.setId(id);
+		return ResponseEntity.ok(professorRepository.salvar(professor));
+	}
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletar(@PathVariable Long id) {
-        log.info("Deletando professor: {}", id);
-        if (!professorRepository.buscarPorId(id).isPresent()) {
-            log.error("Professor não encontrado para exclusão: {}", id);
-            return ResponseEntity.notFound().build();
-        }
-        professorRepository.excluir(id);
-        return ResponseEntity.noContent().build();
-    }
+	@DeleteMapping("/{id}")
+	public ResponseEntity<Void> deletar(@PathVariable Long id) {
+		log.info("Deletando professor: {}", id);
+		if (!professorRepository.buscarPorId(id).isPresent()) {
+			log.error("Professor não encontrado para exclusão: {}", id);
+			return ResponseEntity.notFound().build();
+		}
+		professorRepository.excluir(id);
+		return ResponseEntity.noContent().build();
+	}
 }

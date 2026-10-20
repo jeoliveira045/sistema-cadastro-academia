@@ -41,6 +41,7 @@ public class AlunoController {
     }
 
     @GetMapping
+    @PreAuthorize("hasRole('ADMIN') or hasRole('PROFESSOR') or hasRole('SERVICE')")
     public ResponseEntity<List<Aluno>> listar() {
         log.info("Listando todos os alunos");
         return ResponseEntity.ok(alunoRepository.listarTodos());

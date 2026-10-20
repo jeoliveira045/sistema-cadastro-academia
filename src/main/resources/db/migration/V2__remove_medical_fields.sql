@@ -1,6 +1,6 @@
-ALTER TABLE pessoa
-    DROP COLUMN IF EXISTS tipo_sanguineo,
-    DROP COLUMN IF EXISTS genero;
+-- ALTER TABLE pessoa
+--     DROP COLUMN IF EXISTS tipo_sanguineo,
+--     DROP COLUMN IF EXISTS genero;
 
 ALTER TABLE aluno
     DROP COLUMN IF EXISTS peso,
